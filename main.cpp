@@ -1,10 +1,11 @@
 #include <iostream>
 #include <vector>
+#include <chrono>
 #include <fstream>
 #include <sstream>
 #include "Songs.h"
 
-void parseFile(const std::string& filename, Songs songList){
+void parseFile(const std::string& filename, Songs &songList){
     //create an input filestream
     std::fstream file;
 
@@ -49,7 +50,54 @@ void parseFile(const std::string& filename, Songs songList){
 int main() {
     //create Songs object
     Songs songList;
+    std::cout << "Initializing..." << std::endl;
     parseFile("../Songs100.csv", songList);
-    std::cout << songList.GetAlbum("Testify") << std::endl;
+
+
+    std::cout << "Adding songs to B tree..." << std::endl;
+
+    //start clock
+    auto start = std::chrono::steady_clock::now();
+
+    //TODO add songs to b tree
+    for (int i = 0; i < 1000000000; i++){}
+
+    //stop clock
+    auto stop = std::chrono::steady_clock::now();
+
+    //calculate and print clock difference
+    std::chrono::duration<double> duration = stop - start;
+    std::cout << "Time to add songs to B tree " << duration.count() << " s"<< std::endl;
+
+    std::cout << "Adding songs to hash..." << std::endl;
+
+    //start clock
+    start = std::chrono::steady_clock::now();
+
+    //TODO add songs to hash
+    for (int i = 0; i < 100000; i++){}
+
+    //stop clock
+    stop = std::chrono::steady_clock::now();
+
+    //calculate and print clock difference
+    duration = stop - start;
+    std::cout << "Time to add songs to hash " << duration.count() << " s"<< std::endl;
+
+    //prompt for user search
+    std::cout << "Type song to search for: ";
+
+    //string to hold user search
+    std::string input;
+
+    //search for the song
+    std::cin >> input;
+
+    //TODO search for the song in b tree
+
+    //TODO search for song in hash map
+
+    //TODO print a list of similar songs
+
     return 0;
 }

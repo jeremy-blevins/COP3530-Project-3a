@@ -4,20 +4,17 @@
 class Songs {
 private:
     std::vector<std::vector<std::string>> songList;
-    int FindIndex(std::string searchName);
+    int FindIndex(const std::string& searchName);
 
 public:
     void AddSong(std::vector<std::string> songInfo);
-    std::string GetAlbum(std::string searchName);
-    std::string GetArtists(std::string searchName);
-    double GetDanceability(std::string searchName);
-    double GetEnergy(std::string searchName);
+    std::string GetAlbum(const std::string& searchName);
+    std::string GetArtists(const std::string& searchName);
+    double GetDanceability(const std::string& searchName);
+    double GetEnergy(const std::string& searchName);
 };
 
-int Songs::FindIndex(std::string searchName) {
-    //testing
-    std::cout << songList.size() << std::endl;
-
+int Songs::FindIndex(const std::string& searchName) {
     //set index to -1
     int index = -1;
 
@@ -46,7 +43,7 @@ void Songs::AddSong(std::vector<std::string> songInfo) {
     songList.push_back({songID, songName, songAlbum, songArtists, songDanceability, songEnergy});
 }
 
-std::string Songs::GetAlbum(std::string searchName) {
+std::string Songs::GetAlbum(const std::string& searchName) {
     //temp variables
     std::string result;
     int index;
@@ -63,7 +60,7 @@ std::string Songs::GetAlbum(std::string searchName) {
     return result;
 }
 
-std::string Songs::GetArtists(std::string searchName) {
+std::string Songs::GetArtists(const std::string& searchName) {
     //temp variables
     std::string result;
     int index;
@@ -80,7 +77,7 @@ std::string Songs::GetArtists(std::string searchName) {
     return result;
 }
 
-double Songs::GetDanceability(std::string searchName) {
+double Songs::GetDanceability(const std::string& searchName) {
     //temp variables
     double result;
     int index;
@@ -97,7 +94,7 @@ double Songs::GetDanceability(std::string searchName) {
     return result;
 }
 
-double Songs::GetEnergy(std::string searchName) {
+double Songs::GetEnergy(const std::string& searchName) {
     //temp variables
     double result;
     int index;
