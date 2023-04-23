@@ -97,7 +97,14 @@ int main() {
 
     //TODO search for song in hash map
 
-    //TODO print a list of similar songs
+    //prints a list of similar songs
+    std::vector<std::string> similarSongs;
+    similarSongs = songList.FindSimilar(input);
 
+    std::cout << "You may also like these songs:" << std::endl;
+
+    for (int i  =0;i < similarSongs.size();i++){
+        std::cout << similarSongs[i] << std::endl;
+    }
     return 0;
 }

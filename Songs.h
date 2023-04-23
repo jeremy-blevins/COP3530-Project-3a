@@ -10,8 +10,9 @@ public:
     void AddSong(std::vector<std::string> songInfo);
     std::string GetAlbum(const std::string& searchName);
     std::string GetArtists(const std::string& searchName);
-    double GetDanceability(const std::string& searchName);
-    double GetEnergy(const std::string& searchName);
+    std::string GetDanceability(const std::string& searchName);
+    std::string GetEnergy(const std::string& searchName);
+    std::vector<std::string> FindSimilar(const std::string& searchName);
 };
 
 int Songs::FindIndex(const std::string& searchName) {
@@ -77,36 +78,63 @@ std::string Songs::GetArtists(const std::string& searchName) {
     return result;
 }
 
-double Songs::GetDanceability(const std::string& searchName) {
+std::string Songs::GetDanceability(const std::string& searchName) {
     //temp variables
-    double result;
+    std::string result;
     int index;
 
     //find index of song
     index = FindIndex(searchName);
 
     if (index == -1){
-        result = -1.0;
+        result = "ERROR: Song not found";
     } else {
-        result = std::stod(songList[index][4]);
+        result = songList[index][4];
     }
 
     return result;
 }
 
-double Songs::GetEnergy(const std::string& searchName) {
+std::string Songs::GetEnergy(const std::string& searchName) {
     //temp variables
-    double result;
+    std::string result;
     int index;
 
     //find index of song
     index = FindIndex(searchName);
 
     if (index == -1){
-        result = -1.0;
+        result = "ERROR: Song not found";
     } else {
-        result = std::stod(songList[index][5]);
+        result = songList[index][5];
     }
 
     return result;
+}
+
+std::vector<std::string> Songs::FindSimilar(const std::string& searchName) {
+    //vector to return list of songs
+    std::vector<std::string> results;
+
+    //get danceability
+    std::string danceability = GetDanceability(searchName);
+
+    //find 5 similar danceability songs
+    for (int i =0; i < songList.size(); i++){
+        if (danceability[2] == songList[i][4][2] && searchName != songList[i][1] && results.size() < 5){
+            results.push_back(songList[i][1]);
+        }
+    }
+
+    //get energy
+    std::string energy = GetEnergy(searchName);
+
+    //find 5 similar energy songs
+    for (int j =0; j < songList.size(); j++){
+        if (energy[2] == songList[j][5][2] && searchName != songList[j][1] && results.size() < 10){
+            results.push_back(songList[j][1]);
+        }
+    }
+
+    return results;
 }
