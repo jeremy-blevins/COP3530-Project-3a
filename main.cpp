@@ -32,7 +32,7 @@ void parseFile(const std::string& filename, Songs &songList){
             std::string value;
 
             //add each value to vector
-            while (getline(temp, value, ',')) {
+            while (getline(temp, value, '|')) {
                 songInfo.push_back(value);
             }
 
@@ -51,7 +51,7 @@ int main() {
     //create Songs object
     Songs songList;
     std::cout << "Initializing..." << std::endl;
-    parseFile("../Songs100.csv", songList);
+    parseFile("../Songs100k.txt", songList);
 
 
     std::cout << "Adding songs to B tree..." << std::endl;
