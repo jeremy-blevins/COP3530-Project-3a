@@ -21,9 +21,9 @@ public:
     std::vector<std::vector<string>> FindSimilar(const Song& searchSong);
 };
 
-bool tuple_comparison (tuple<double,std::vector<string>> i,tuple<double,std::vector<string>> j) 
-{ 
-    return (std::get<0>(i) < std::get<0>(j)); 
+bool tuple_comparison (tuple<double,std::vector<string>> i,tuple<double,std::vector<string>> j)
+{
+    return (std::get<0>(i) < std::get<0>(j));
 }
 
 int Songs::FindIndex(const std::string& searchName) {
@@ -41,8 +41,8 @@ int Songs::FindIndex(const std::string& searchName) {
 
 void Songs::AddSong(std::vector<std::string> songInfo) {
     //temp variables;
-    std::string songID, songName, songAlbum, songArtists, songDanceability, songEnergy, songSpeechiness, 
-                songAcousticness, songInstrumentalness, songLiveliness, songValence;
+    std::string songID, songName, songAlbum, songArtists, songDanceability, songEnergy, songSpeechiness,
+            songAcousticness, songInstrumentalness, songLiveliness, songValence;
 
     //get relevant song info
     songID = songInfo[0];
@@ -58,7 +58,7 @@ void Songs::AddSong(std::vector<std::string> songInfo) {
     songValence = songInfo[18];
 
     //add song to songList
-    songList.push_back({songID, songName, songAlbum, songArtists, songDanceability, songEnergy, 
+    songList.push_back({songID, songName, songAlbum, songArtists, songDanceability, songEnergy,
                         songSpeechiness, songAcousticness, songInstrumentalness, songLiveliness, songValence});
 }
 
@@ -135,9 +135,9 @@ std::vector<std::vector<string>> Songs::FindSimilar(const Song& searchSong) {
     std::vector<std::vector<string>> results;
 
     std::string searchName = searchSong.name;
-    
+
     // Calculate the squares of the danceability errors
-    std::vector<double> danceability_errors_squared; 
+    std::vector<double> danceability_errors_squared;
     for(int i = 0; i < songList.size(); i++)
     {
         double danceability_error = stod(songList[i][4]) - searchSong.danceability;
@@ -145,15 +145,15 @@ std::vector<std::vector<string>> Songs::FindSimilar(const Song& searchSong) {
     }
 
     // Calculate the squares of the energy errors
-    std::vector<double> energy_errors_squared; 
+    std::vector<double> energy_errors_squared;
     for(int i = 0; i < songList.size(); i++)
-    {   
+    {
         double energy_error = stod(songList[i][5]) - searchSong.energy;
         energy_errors_squared.push_back(energy_error*energy_error);
     }
 
     // Calculate the squares of the speechiness errors
-    std::vector<double> speechiness_errors_squared; 
+    std::vector<double> speechiness_errors_squared;
     for(int i = 0; i < songList.size(); i++)
     {
         double speechiness_error = stod(songList[i][6]) - searchSong.speechiness;
@@ -161,7 +161,7 @@ std::vector<std::vector<string>> Songs::FindSimilar(const Song& searchSong) {
     }
 
     // Calculate the squares of the acousticness errors
-    std::vector<double> acousticness_errors_squared; 
+    std::vector<double> acousticness_errors_squared;
     for(int i = 0; i < songList.size(); i++)
     {
         double acousticness_error = stod(songList[i][7]) - searchSong.acousticness;
@@ -169,7 +169,7 @@ std::vector<std::vector<string>> Songs::FindSimilar(const Song& searchSong) {
     }
 
     // Calculate the squares of the instrumentalness errors
-    std::vector<double> instrumentalness_errors_squared; 
+    std::vector<double> instrumentalness_errors_squared;
     for(int i = 0; i < songList.size(); i++)
     {
         double instrumentalness_error = stod(songList[i][8]) - searchSong.instrumentalness;
@@ -177,7 +177,7 @@ std::vector<std::vector<string>> Songs::FindSimilar(const Song& searchSong) {
     }
 
     // Calculate the squares of the liveliness errors
-    std::vector<double> liveliness_errors_squared; 
+    std::vector<double> liveliness_errors_squared;
     for(int i = 0; i < songList.size(); i++)
     {
         double liveliness_error = stod(songList[i][9]) - searchSong.liveliness;
@@ -185,7 +185,7 @@ std::vector<std::vector<string>> Songs::FindSimilar(const Song& searchSong) {
     }
 
     // Calculate the squares of the valence errors
-    std::vector<double> valence_errors_squared; 
+    std::vector<double> valence_errors_squared;
     for(int i = 0; i < songList.size(); i++)
     {
         double valence_error = stod(songList[i][10]) - searchSong.valence;
@@ -197,9 +197,9 @@ std::vector<std::vector<string>> Songs::FindSimilar(const Song& searchSong) {
     std::vector<tuple<double,std::vector<string>>> distance_squared_tuples;
     for(int i = 0; i < songList.size(); i++)
     {
-        double error_sum = danceability_errors_squared[i] + energy_errors_squared[i] + speechiness_errors_squared[i] 
-                        + acousticness_errors_squared[i] + instrumentalness_errors_squared[i] + liveliness_errors_squared[i]
-                        + valence_errors_squared[i];
+        double error_sum = danceability_errors_squared[i] + energy_errors_squared[i] + speechiness_errors_squared[i]
+                           + acousticness_errors_squared[i] + instrumentalness_errors_squared[i] + liveliness_errors_squared[i]
+                           + valence_errors_squared[i];
         vector<string> song_info;
         song_info.push_back(songList[i][1]);
         song_info.push_back(songList[i][3]);
@@ -238,26 +238,21 @@ std::vector<std::vector<string>> Songs::FindSimilar(const Song& searchSong) {
 /*
 //vector to return list of songs
     std::vector<std::string> results;
-
     //get danceability
     std::string danceability = GetDanceability(searchName);
-
     //find 5 similar danceability songs
     for (int i =0; i < songList.size(); i++){
         if (danceability[2] == songList[i][4][2] && searchName != songList[i][1] && results.size() < 5){
             results.push_back(songList[i][1]);
         }
     }
-
     //get energy
     std::string energy = GetEnergy(searchName);
-
     //find 5 similar energy songs
     for (int j =0; j < songList.size(); j++){
         if (energy[2] == songList[j][5][2] && searchName != songList[j][1] && results.size() < 10){
             results.push_back(songList[j][1]);
         }
     }
-
     return results;
 */

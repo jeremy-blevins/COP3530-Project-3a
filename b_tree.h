@@ -21,10 +21,10 @@ class Node
     Song* keys; // An array will contain the keys
     Node** children; // An array will contain pointers to the children nodes
 
-    public:
-        Node(bool is_leaf, B_Tree* tree);
-        void split_child(int child_idx);
-        void insert_non_full(Song k);
+public:
+    Node(bool is_leaf, B_Tree* tree);
+    void split_child(int child_idx);
+    void insert_non_full(Song k);
 };
 
 class B_Tree
@@ -38,13 +38,13 @@ class B_Tree
     void destructor_helper(Node* n);
     Song* search_helper(Node* n, string search_name);
 
-    public: 
-        int num_nodes; // Number of nodes
-        B_Tree(int l);
-        ~B_Tree();
-        void insert_key(Song k);
-        void print_tree(); // Inorder traversal of B tree
-        Song* search(string search_name);
+public:
+    int num_nodes; // Number of nodes
+    B_Tree(int l);
+    ~B_Tree();
+    void insert_key(Song k);
+    void print_tree(); // Inorder traversal of B tree
+    Song* search(string search_name);
 };
 
 B_Tree::B_Tree(int l)
@@ -114,49 +114,45 @@ void Node::split_child(int child_idx)
     this->tree->num_nodes++;
 }
 
-void Node::insert_non_full(Song k)
-{
+void Node::insert_non_full(Song k) {
     int i = this->num_keys; // Set i to the number of keys in the node
 
     // If the node is a leaf
-    if(this->is_leaf) 
-    {
+    if (this->is_leaf) {
         // Consider replacing this by inserting into a multiset
 
         // This loop determines where in the key vector the key k needs to be placed
-        while(i >= 1 && k < this->keys[(i)-1]) // While the number of keys in the node >= 1 AND the key k is less than the last key of the node
+        while (i >= 1 && k < this->keys[(i) -
+                                        1]) // While the number of keys in the node >= 1 AND the key k is less than the last key of the node
         {
-            this->keys[(i+1)-1] = this->keys[(i)-1]; // Set 
+            this->keys[(i + 1) - 1] = this->keys[(i) - 1]; // Set
             i--;
         }
 
         // Set the key at index i to k
-        this->keys[(i+1)-1] = k;
+        this->keys[(i + 1) - 1] = k;
 
         // Increment the number of keys
         this->num_keys++;
     }
-    // Otherwise, if the node is not a leaf
-    else
-    {
+        // Otherwise, if the node is not a leaf
+    else {
         // While the number of keys in the node >= 1 AND the key k is less than the last key of the node
-        while(i >= 1 && k < this->keys[(i)-1]) 
-        {
+        while (i >= 1 && k < this->keys[(i) - 1]) {
             i--;
         }
         i++;
         // If the ith child is full
-        if(this->children[(i)-1]->num_keys == (2*(this->tree->l)-1)) 
-        {
+        if (this->children[(i) - 1]->num_keys == (2 * (this->tree->l) - 1)) {
             //cout << "Split at node" << endl;
             this->split_child(i); // Split the ith child
-            if(k > this->keys[(i)-1]) // If key k is greater than the ith key
+            if (k > this->keys[(i) - 1]) // If key k is greater than the ith key
             {
                 i++; // Increment i
             }
         }
         // Insert the key k into the non-full ith child
-        this->children[(i)-1]->insert_non_full(k);
+        this->children[(i) - 1]->insert_non_full(k);
     }
 
 }
@@ -172,7 +168,7 @@ void B_Tree::insert_key(Song k)
         // Set the number of keys in the root to 1
         root->num_keys = 1;
     }
-    // Otherwise, the root is not empty (meaning the tree is not empty)
+        // Otherwise, the root is not empty (meaning the tree is not empty)
     else
     {
         // If the root node is full, it needs to be split, so create a new root node with the old root node as its 0th and only child
@@ -191,7 +187,7 @@ void B_Tree::insert_key(Song k)
             root->insert_non_full(k);
         }
 
-        // Otherwise, no splitting needs to be done
+            // Otherwise, no splitting needs to be done
         else
         {
             root->insert_non_full(k);
@@ -205,6 +201,7 @@ void B_Tree::print_tree()
 {
     print_tree_helper(root);
 }
+
 
 void B_Tree::print_tree_helper(Node* n)
 {
@@ -225,6 +222,7 @@ void B_Tree::print_tree_helper(Node* n)
         print_tree_helper(n->children[n->num_keys]);
     }
 }
+
 
 B_Tree::~B_Tree()
 {
