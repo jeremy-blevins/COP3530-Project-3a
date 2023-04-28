@@ -14,10 +14,6 @@ private:
 
 public:
     void AddSong(std::vector<std::string> songInfo);
-    std::string GetAlbum(const std::string& searchName);
-    std::string GetArtists(const std::string& searchName);
-    std::string GetDanceability(const std::string& searchName);
-    std::string GetEnergy(const std::string& searchName);
     std::vector<std::vector<string>> FindSimilar(const Song& searchSong);
 };
 
@@ -62,132 +58,47 @@ void Songs::AddSong(std::vector<std::string> songInfo) {
                         songSpeechiness, songAcousticness, songInstrumentalness, songLiveliness, songValence});
 }
 
-std::string Songs::GetAlbum(const std::string& searchName) {
-    //temp variables
-    std::string result;
-    int index;
-
-    //find index of song
-    index = FindIndex(searchName);
-
-    if (index == -1){
-        result = "ERROR: Song not found";
-    } else {
-        result = songList[index][2];
-    }
-
-    return result;
-}
-
-std::string Songs::GetArtists(const std::string& searchName) {
-    //temp variables
-    std::string result;
-    int index;
-
-    //find index of song
-    index = FindIndex(searchName);
-
-    if (index == -1){
-        result = "ERROR: Song not found";
-    } else {
-        result = songList[index][3];
-    }
-
-    return result;
-}
-
-std::string Songs::GetDanceability(const std::string& searchName) {
-    //temp variables
-    std::string result;
-    int index;
-
-    //find index of song
-    index = FindIndex(searchName);
-
-    if (index == -1){
-        result = "ERROR: Song not found";
-    } else {
-        result = songList[index][4];
-    }
-
-    return result;
-}
-
-std::string Songs::GetEnergy(const std::string& searchName) {
-    //temp variables
-    std::string result;
-    int index;
-
-    //find index of song
-    index = FindIndex(searchName);
-
-    if (index == -1){
-        result = "ERROR: Song not found";
-    } else {
-        result = songList[index][5];
-    }
-
-    return result;
-}
-
 std::vector<std::vector<string>> Songs::FindSimilar(const Song& searchSong) {
     //vector to return list of songs
     std::vector<std::vector<string>> results;
 
     std::string searchName = searchSong.name;
-
-    // Calculate the squares of the danceability errors
+    
     std::vector<double> danceability_errors_squared;
+    std::vector<double> energy_errors_squared;
+    std::vector<double> speechiness_errors_squared;
+    std::vector<double> acousticness_errors_squared;
+    std::vector<double> instrumentalness_errors_squared;
+    std::vector<double> liveliness_errors_squared;
+    std::vector<double> valence_errors_squared;
+
     for(int i = 0; i < songList.size(); i++)
     {
+        // Calculate the squares of the danceability errors
         double danceability_error = stod(songList[i][4]) - searchSong.danceability;
         danceability_errors_squared.push_back(danceability_error*danceability_error);
-    }
 
-    // Calculate the squares of the energy errors
-    std::vector<double> energy_errors_squared;
-    for(int i = 0; i < songList.size(); i++)
-    {
+        // Calculate the squares of the energy errors
         double energy_error = stod(songList[i][5]) - searchSong.energy;
         energy_errors_squared.push_back(energy_error*energy_error);
-    }
 
-    // Calculate the squares of the speechiness errors
-    std::vector<double> speechiness_errors_squared;
-    for(int i = 0; i < songList.size(); i++)
-    {
+        // Calculate the squares of the speechiness errors
         double speechiness_error = stod(songList[i][6]) - searchSong.speechiness;
         speechiness_errors_squared.push_back(speechiness_error*speechiness_error);
-    }
 
-    // Calculate the squares of the acousticness errors
-    std::vector<double> acousticness_errors_squared;
-    for(int i = 0; i < songList.size(); i++)
-    {
+        // Calculate the squares of the acousticness errors
         double acousticness_error = stod(songList[i][7]) - searchSong.acousticness;
         acousticness_errors_squared.push_back(acousticness_error*acousticness_error);
-    }
 
-    // Calculate the squares of the instrumentalness errors
-    std::vector<double> instrumentalness_errors_squared;
-    for(int i = 0; i < songList.size(); i++)
-    {
+        // Calculate the squares of the instrumentalness errors
         double instrumentalness_error = stod(songList[i][8]) - searchSong.instrumentalness;
         instrumentalness_errors_squared.push_back(instrumentalness_error*instrumentalness_error);
-    }
 
-    // Calculate the squares of the liveliness errors
-    std::vector<double> liveliness_errors_squared;
-    for(int i = 0; i < songList.size(); i++)
-    {
+        // Calculate the squares of the liveliness errors
         double liveliness_error = stod(songList[i][9]) - searchSong.liveliness;
         liveliness_errors_squared.push_back(liveliness_error*liveliness_error);
-    }
 
-    // Calculate the squares of the valence errors
-    std::vector<double> valence_errors_squared;
-    for(int i = 0; i < songList.size(); i++)
-    {
+        // Calculate the squares of the valence errors
         double valence_error = stod(songList[i][10]) - searchSong.valence;
         valence_errors_squared.push_back(valence_error*valence_error);
     }
@@ -238,21 +149,26 @@ std::vector<std::vector<string>> Songs::FindSimilar(const Song& searchSong) {
 /*
 //vector to return list of songs
     std::vector<std::string> results;
+
     //get danceability
     std::string danceability = GetDanceability(searchName);
+
     //find 5 similar danceability songs
     for (int i =0; i < songList.size(); i++){
         if (danceability[2] == songList[i][4][2] && searchName != songList[i][1] && results.size() < 5){
             results.push_back(songList[i][1]);
         }
     }
+
     //get energy
     std::string energy = GetEnergy(searchName);
+
     //find 5 similar energy songs
     for (int j =0; j < songList.size(); j++){
         if (energy[2] == songList[j][5][2] && searchName != songList[j][1] && results.size() < 10){
             results.push_back(songList[j][1]);
         }
     }
+
     return results;
 */
