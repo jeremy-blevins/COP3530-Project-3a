@@ -1,6 +1,15 @@
-cmake_minimum_required(VERSION 3.24)
-project(Cop3530_Project_3a)
+cmake_minimum_required(VERSION 3.22)
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_CXX_STANDARD 17)
+project(Project3)
 
-add_executable(Cop3530_Project_3a main.cpp)
+## If you want to link SFML statically
+# set(SFML_STATIC_LIBRARIES TRUE)
+
+## In most cases better set in the CMake cache
+# set(SFML_DIR "<sfml root prefix>/lib/cmake/SFML")
+
+find_package(SFML 2.5 COMPONENTS graphics audio REQUIRED)
+add_executable(Project3 main.cpp texture.cpp texture.h Songs.h hash.h song.h B_Tree.h b_tree.h hash.h)
+target_link_libraries(Project3 sfml-graphics sfml-audio)

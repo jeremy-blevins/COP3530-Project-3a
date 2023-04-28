@@ -9,23 +9,58 @@ using namespace std;
 
 class Hash {
 private:
-    static const int tableSize = 1000;
 
-    Song* hashMap[tableSize];
+    struct songStruct {
+        Song song;
+        songStruct* next;
+        songStruct* prev;
+    };
+
+    static const int tableSize = 100;
+    songStruct* hashMap[tableSize];
 
 public:
     Hash();
     int hash(string key);
-    void insert_key(Song k);
-    vector<Song*> FindSong(string title);
-
+    void AddSong(Song newSong);
+    int NumberOfItemsInIndex(int index);
+    void PrintTable();
+    void PrintItemsInIndex(int index);
+    void FindSong(string name);
+    void RemoveItem(string title);
+    int count = 0;
 };
 
 Hash::Hash(){
-    for (int i = 0; i < tableSize; ++i){
-        Song* k = new Song;
-        k->name = "NULL";
-        hashMap[i] = k;
+    for (int i = 0; i < tableSize; ++i) {
+        hashMap[i] = new songStruct;
+        hashMap[i]->next = nullptr;
+        hashMap[i]->prev = nullptr;
+    }
+
+}
+
+void Hash::AddSong(Song newSong) {
+
+    int index = hash(newSong.name);
+
+
+    if (hashMap[index]->song.name.empty())
+    {
+        hashMap[index]->song = newSong;
+    }
+    else
+    {
+        songStruct* Ptr = hashMap[index];
+        songStruct* n = new songStruct;
+        n->song = newSong;
+        n->next = nullptr;
+
+        while(Ptr->next != nullptr)
+        {
+            Ptr = Ptr->next;
+        }
+        Ptr->next = n;
     }
 }
 
@@ -44,173 +79,37 @@ int Hash::hash(string key) {
     return index;
 }
 
-void Hash::insert_key(Song k) {
 
-    int index = hash(k.name);
-
-
-    if (hashMap[index]->name == "NULL")
-    {
-        hashMap[index] = &k;
-    }
-    else
-    {
-        Song* Ptr = hashMap[index];
-        Song* n = new Song;
-        *n = k;
-        n->next = nullptr;
-
-        while(Ptr->next != nullptr)
-        {
-            Ptr = Ptr->next;
-        }
-        Ptr->next = n;
-    }
-}
-
-vector<Song*> Hash::FindSong(string title)
+void Hash::FindSong(string name)
 {
-    vector<Song*> searchResults;
-    int index = hash(title);
-    bool foundTitle = false;
+    int index = hash(name);
+    bool foundName = false;
+    Song song;
 
-    Song* Ptr = hashMap[index];
+    songStruct* Ptr = hashMap[index];
+    while (Ptr != nullptr) {
 
-    while (Ptr != nullptr)
-    {
-        if (Ptr->name == title)
-        {
-            foundTitle = true;
-            searchResults.push_back(Ptr);
+        if(Ptr->song.name == name) {
+
+            foundName = true;
+            song = Ptr->song;
         }
+
         Ptr = Ptr->next;
     }
 
-    if(foundTitle)
+    if(foundName == true)
     {
-        for (int i = 0; i < searchResults.size(); ++i) {
-            cout << "\"" << searchResults[i]->name << "\" by: " << searchResults[i]->artists << endl;
-        }
-
+        cout << "Song name = " << song.name << endl;
+        cout << "Song artist = " << song.artists << endl;
     }
     else
     {
-        cout << title << "'s information was not found in the Hash Table\n";
+        cout << name << "'s information was not found in the Hash Table\n";
     }
-
-    return searchResults;
 }
-
-
-
-
-
-
-
-
 
 /*
-int Hash::NumberOfItemsInIndex(int index)
-{
-    int count = 0;
-
-    if(hashMap[index]->info.empty())
-    {
-        return count;
-    }
-    else
-    {
-        count++;
-        song* Ptr = hashMap[index];
-        while(Ptr->next != NULL)
-        {
-            count++;
-            Ptr = Ptr->next;
-        }
-    }
-    return count;
-}
-
-void Hash::PrintTable()
-{
-    int number;
-    for(int i = 0; i < tableSize; i++)
-    {
-        number = NumberOfItemsInIndex(i);
-        cout << "--------------------------\n";
-        cout << "index = " << i << endl;
-        for (int j = 0; j < hashMap[i]->info.size(); ++j) {
-            cout << hashMap[i]->info[j] << ", ";
-        }
-        cout << "# of items = " << number << endl;
-        cout << "--------------------------\n";
-    }
-}
-
-void Hash::PrintItemsInIndex(int index)
-{
-    song* Ptr = hashMap[index];
-
-    if(Ptr->info.empty())
-    {
-        cout << "index = " << index << " is empty";
-    }
-    else
-    {
-        cout << "index " << index << " contains the following songs\n";
-
-        while(Ptr != NULL)
-        {
-            cout <<"--------------\n";
-            for (int i = 0; i < Ptr->info.size(); ++i) {
-                cout << Ptr->info[i] << ", ";
-            }
-            cout <<"--------------\n";
-            Ptr = Ptr->next;
-        }
-    }
-}
-
-auto cmp = [](const std::pair<int, std::string>& a, const std::pair<int, std::string>& b) {
-    return a.first < b.first;
-};
-
-vector<pair<float, song*>> Hash::FindSimilar(string title) {
-
-    vector<pair<float, song*>> similar;
-    song* songPtr = FindSong(title);
-    cout <<songPtr->info[1] << endl;
-
-    for (int i = 0; i < tableSize; ++i) {
-        song* Ptr = hashMap[i];
-        while (Ptr != NULL)
-        {
-            float score = 0;
-            float valScore;
-            for (int j = 9; j < Ptr->info.size(); ++j) {
-                if (j != 11 && j != 12 && j != 13 && j != 16 && j != 20 && j != 21) {
-                    valScore = abs(stof(songPtr->info[j])-stof(Ptr->info[j]));
-                    score+= valScore;
-                }
-            }
-            similar.push_back(make_pair(score,Ptr));
-            int k = similar.size();
-            Ptr = Ptr->next;
-        }
-    }
-
-    //TODO: sort similar in ascending order by the float value in each pair.
-    // sort similar in ascending order by the float value in each pair.
-    std::sort(similar.begin(), similar.end(), [](const auto& lhs, const auto& rhs){
-        return lhs.first < rhs.first;
-    });
-
-    for (int i = 0; i < 10; ++i) {
-        cout << similar[i].second->info[1] << endl;
-    }
-    return similar;
-}
-
 void Hash::RemoveItem(string title)
 {
     int index = hash(title);

@@ -71,23 +71,13 @@ void parseFile(const std::string& filename, Songs &songList, vector<Song>& allSo
 
 int main() {
 
-    //Songs
-    Songs songList;
-    // Create B Tree object
-    B_Tree songTree(10);
-    //Create Hash Map Object
-    Hash songHash;
-    vector<Song> allSongs;
-
-    parseFile("./Songs100k.txt", songList, allSongs);
-
     //Support Variables
     double mouseX;
     double mouseY;
     int state = 0;
+    int app = 4;
     string search = "";
     vector<sf::Text> songs;
-    vector<sf::Text> messages;
     bool logScroll = false;
     int sub;
 
@@ -114,7 +104,7 @@ int main() {
     mid.setTexture(texture::GetTexture("mid"));
     mid.setPosition(804,254);
     mid.setScale(540/mid.getGlobalBounds().width, 804/mid.getGlobalBounds().width);
-
+/*
     sf::Sprite treeView;
     treeView.setTexture(texture::GetTexture("btree"));
     treeView.setPosition(829, 129);
@@ -124,21 +114,26 @@ int main() {
     mapView.setTexture(texture::GetTexture("hashmap"));
     mapView.setPosition(929 , 129);
     mapView.setScale(87 / mapView.getGlobalBounds().width, 87 / mapView.getGlobalBounds().width);
-
+*/
     sf::Sprite playlist;
     playlist.setTexture(texture::GetTexture("playlist"));
     playlist.setPosition(1029 , 129);
     playlist.setScale(87 / playlist.getGlobalBounds().width, 87 / playlist.getGlobalBounds().width);
 
+    sf::Sprite start;
+    start.setTexture(texture::GetTexture("start"));
+    start.setPosition(810, 380);
+    start.setScale(200/ start.getGlobalBounds().width, 200 / start.getGlobalBounds().width);
+
     sf::Sprite log;
     log.setTexture(texture::GetTexture("log"));
-    log.setPosition(1129 , 129);
+    log.setPosition(929 , 129);
     log.setScale(87 / log.getGlobalBounds().width, 87 / log.getGlobalBounds().width);
 
 
     sf::Sprite restart;
     restart.setTexture(texture::GetTexture("restart"));
-    restart.setPosition(1229,129);
+    restart.setPosition(1129,129);
     restart.setScale(87/restart.getGlobalBounds().width, 87/restart.getGlobalBounds().width);
 
     sf::Sprite mag;
@@ -151,6 +146,15 @@ int main() {
     searchBar.setPosition(22,121);
     searchBar.setScale(713.48/searchBar.getGlobalBounds().width, 713.48/searchBar.getGlobalBounds().width);
 
+    sf::Sprite up;
+    up.setTexture(texture::GetTexture("up"));
+    up.setPosition(1230,260);
+    up.setScale(20/up.getGlobalBounds().width, 20/up.getGlobalBounds().width);
+
+    sf::Sprite down;
+    down.setTexture(texture::GetTexture("down"));
+    down.setPosition(1259,260);
+    down.setScale(20/down.getGlobalBounds().width, 20/down.getGlobalBounds().width);
 
     //Font
     sf::Font font;
@@ -161,275 +165,513 @@ int main() {
     sf::Text searchTerm;
     searchTerm.setFont(font);
     searchTerm.setString("Search");
-    searchTerm.setPosition(41, 130);
+    searchTerm.setPosition(41, 125);
     searchTerm.setCharacterSize(36);
     searchTerm.setFillColor(sf::Color::Black);
 
+    //Playlist
+    string playlistString = "";
+    sf::Text playlistText;
+    playlistText.setFont(font);
+    playlistText.setCharacterSize(20);
+    playlistText.setPosition(818.6,302.029);
+
+    //Playlist
+    string messagesString = "";
+    sf::Text messages;
+    messages.setFont(font);
+    messages.setCharacterSize(20);
+    messages.setPosition(818.6,302.029);
+
+    int maxChildren = 10;
+
+
     //Icon names
     vector<sf::Text> labels;
-    sf::Text treeViewTxt;
-    treeViewTxt.setFont(font);
-    treeViewTxt.setString("B Tree");
-    treeViewTxt.setPosition(851, 227.443);
-    treeViewTxt.setCharacterSize(16.51);
-    treeViewTxt.setFillColor(sf::Color::White);
-    labels.push_back(treeViewTxt);
-    sf::Text mapViewTxt;
-    mapViewTxt.setFont(font);
-    mapViewTxt.setString("Hash Map");
-    mapViewTxt.setPosition(947, 227.443);
-    mapViewTxt.setCharacterSize(16.51);
-    mapViewTxt.setFillColor(sf::Color::White);
-    labels.push_back(mapViewTxt);
     sf::Text playlistTxt;
     playlistTxt.setFont(font);
     playlistTxt.setString("Playlist");
-    playlistTxt.setPosition(1049, 227.443);
+    playlistTxt.setPosition(1029+15, 227.443);
     playlistTxt.setCharacterSize(16.51);
     playlistTxt.setFillColor(sf::Color::White);
     labels.push_back(playlistTxt);
     sf::Text logTxt;
     logTxt.setFont(font);
     logTxt.setString("Log");
-    logTxt.setPosition(1151, 227.443);
+    logTxt.setPosition(929+30, 227.443);
     logTxt.setCharacterSize(16.51);
     logTxt.setFillColor(sf::Color::White);
     labels.push_back(logTxt);
     sf::Text restartTxt;
     restartTxt.setFont(font);
     restartTxt.setString("Restart");
-    restartTxt.setPosition(1247, 227.443);
+    restartTxt.setPosition(1129+15, 227.443);
     restartTxt.setCharacterSize(16.51);
     restartTxt.setFillColor(sf::Color::White);
     labels.push_back(restartTxt);
 
 
+    //Settings
+    string maxChildsString = "10";
+    sf::Text maxChilds;
+    maxChilds.setFont(font);
+    maxChilds.setString(maxChildsString);
+    maxChilds.setPosition(1200, 322.029);
+    maxChilds.setCharacterSize(20);
+    maxChilds.setFillColor(sf::Color::White);
+    string tableSizeString = "100";
+    sf::Text tableSize;
+    tableSize.setFont(font);
+    tableSize.setString(tableSizeString);
+    tableSize.setPosition(1200, 342.029);
+    tableSize.setCharacterSize(20);
+    tableSize.setFillColor(sf::Color::White);
+
+    string questionsString = "Please enter # of max children in the B tree:\nPlease enter the array size of the hash map:";
+    sf::Text questions;
+    questions.setFont(font);
+    questions.setString(questionsString);
+    questions.setPosition(810, 322.029);
+    questions.setCharacterSize(20);
+    questions.setFillColor(sf::Color::White);
+
+    int setting;
+    bool set = false;
+
 
 //Window Loop
 while(window.isOpen()) {
 
-sf::Event event;
+    sf::Event event;
 
-    while (state == 0) {
-
-        //TODO add songs to B Tree
-        messages.clear();
-        songs.clear();
-        search = "";
-        searchTerm.setString("Search");
-        logScroll = false;
+    while(!set) {
 
         while (window.pollEvent(event))
         {
             if (event.type == sf::Event::Closed) {
                 window.close();
             }
-        }
-
-        window.clear();
-        window.draw(back);
-        messages.push_back(sf::Text("Adding songs to B Tree...",font,20));
-        messages[messages.size()-1].setPosition(818.6,302.029);
-
-        int j = 0;
-        auto start = std::chrono::steady_clock::now();
-        //TODO add songs to B Tree
-
-        for (int i = 0; i < allSongs.size(); ++i) {
-            songTree.insert_key(allSongs[i]);
-            j++;
-        }
-        cout << j << endl;
-
-        auto stop = std::chrono::steady_clock::now();
-
-        std::chrono::duration<double> duration = stop - start;
-        string time = "Time to add songs to B tree: " + to_string(duration.count()) + " ms";
-        messages.push_back(sf::Text(time,font,20));
-        messages[messages.size()-1].setPosition(818.6,messages[messages.size()-2].getGlobalBounds().top+25);
-        messages.push_back(sf::Text("Adding songs to Hash Map...",font,20));
-        messages[messages.size()-1].setPosition(818.6,messages[messages.size()-2].getGlobalBounds().top+25);
-
-        j = 0;
-        start = std::chrono::steady_clock::now();
-        //TODO add songs to Hash Map
-
-        for (int i = 0; i < allSongs.size(); ++i) {
-            songHash.insert_key(allSongs[i]);
-            j++;
-        }
-        cout << j << endl;
-
-        stop = std::chrono::steady_clock::now();
-
-        duration = stop - start;
-        time = "Time to add songs to Hash Map: " + to_string(duration.count()) + " ms";
-        messages.push_back(sf::Text(time,font,20));
-        messages[messages.size()-1].setPosition(818.6,messages[messages.size()-2].getGlobalBounds().top+25);
-
-        state = 1;
-
-
-    }
-
-    while(state == 1) {
-
-        while (window.pollEvent(event))
-        {
-            if (event.type == sf::Event::Closed) {
-                window.close();
-            }
-            if (event.type == sf::Event::MouseButtonPressed) {
+            else if (event.type == sf::Event::MouseButtonPressed) {
                 //Search
-                if (searchBar.getGlobalBounds().contains(sf::Mouse::getPosition(window).x,sf::Mouse::getPosition(window).y)){
-                    state = 2;
-                    if (search == "") { searchTerm.setString("");}
+                if (maxChilds.getGlobalBounds().contains(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y)) {
+                    setting = 0;
                 }
-                else if (treeView.getGlobalBounds().contains(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y)){
-                    //TODO create search function with B Tree
+                else if (tableSize.getGlobalBounds().contains(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y)) {
+                    setting = 1;
                 }
-                else if (mapView.getGlobalBounds().contains(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y)){
-                    //TODO create search function with B Tree
+                else if (start.getGlobalBounds().contains(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y)) {
+                    set = true;
                 }
-                else if (restart.getGlobalBounds().contains(sf::Mouse::getPosition(window).x,sf::Mouse::getPosition(window).y)){
-                    state = 0;
-                }
-
             }
-        }
-
-        //Draw Window
-        window.clear();
-        window.draw(mid);
-        for (int i = 0; i < messages.size(); ++i) {window.draw(messages[i]);}
-        window.draw(back);
-        for (int i = 0; i < songs.size(); ++i) {window.draw(songs[i]);}
-        window.draw(treeView);
-        window.draw(mapView);
-        window.draw(playlist);
-        window.draw(log);
-        window.draw(restart);
-        window.draw(searchBar);
-        window.draw(mag);
-        window.draw(searchTerm);
-        for (int i = 0; i < labels.size(); ++i) {window.draw(labels[i]);}
-        for (int i = 0; i < messages.size(); ++i) {window.draw(messages[i]);}
-        window.display();
-    }
-
-    while (state == 2) {
-
-        while (window.pollEvent(event)) {
-            if (event.type == sf::Event::TextEntered)
+            else if (event.type == sf::Event::TextEntered)
             {
                 //Enter
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
                 {
                     // Enter key pressed, do something
-                    state = 1;
-                    Song* searchedSong;
-                    messages.push_back(sf::Text("Searching Simular songs to: " + search,font,20));
-                    messages[messages.size()-1].setPosition(818.6,messages[messages.size()-2].getGlobalBounds().top+25);
-
-                    if (messages.size() > 17) {
-                        for (int i = 0; i < messages.size(); i++) {
-                            if (i == 0) {messages[i].move(0, -25); continue;}
-                            messages[i].move(0, -25);
-                            logScroll = true;
-                        }
-                    }
-
-                    auto start = std::chrono::steady_clock::now();
-                    searchedSong = songTree.search(search);
-                    cout << search << endl;
-                    auto stop = std::chrono::steady_clock::now();
-
-                    std::chrono::duration<double> duration = stop - start;
-                    string time = "Time to find songs in B tree: " + to_string(duration.count()) + " ms";
-                    messages.push_back(sf::Text(time,font,20));
-                    messages[messages.size()-1].setPosition(818.6,messages[messages.size()-2].getGlobalBounds().top+25);
-
-                    start = std::chrono::steady_clock::now();
-                    songHash.FindSong(search);
-                    cout << search << endl;
-                    stop = std::chrono::steady_clock::now();
-
-                    duration = stop - start;
-                    time = "Time to find songs in Hash Map: " + to_string(duration.count()) + " ms";
-                    messages.push_back(sf::Text(time,font,20));
-                    messages[messages.size()-1].setPosition(818.6,messages[messages.size()-2].getGlobalBounds().top+25);
-
-                    vector<vector<string>> temp = songList.FindSimilar(*searchedSong);
-
-                    songs.clear();
-                    for (int i = 0; i < temp.size(); ++i){
-                        string tempStr = "Song #" + (to_string(i+1)) + ": " + temp[i][0];
-                        sf::Text song;
-                        song.setString(tempStr);
-                        song.setPosition(30,199 + (i*57));
-                        song.setFillColor(sf::Color::White);
-                        song.setFont(font);
-                        song.setCharacterSize(25);
-                        songs.push_back(song);
-                    }
+                    set = true;
                 }
 
                 //Backspace
                 else if (event.text.unicode == 8)
                 {
-                    if(!search.empty())
-                        search.pop_back();
+                    if (setting == 0) {
+                        if(!maxChildsString.empty())
+                            maxChildsString.pop_back();
+                    }
+                    else if (setting == 1) {
+                        if(!tableSizeString.empty())
+                            tableSizeString.pop_back();
+                    }
+
                 }
 
-                // Check for other printable characters
+                    // Check for other printable characters
                 else if (event.text.unicode >= 32 && event.text.unicode <= 126)
                 {
-                    // Printable character entered, add it to the search string
-                    search += static_cast<char>(event.text.unicode);
+                    if (setting == 0) {
+                        maxChildsString += static_cast<char>(event.text.unicode);
+                    }
+                    else if (setting == 1) {
+                        tableSizeString += static_cast<char>(event.text.unicode);
+                    }
                 }
                 else
                 {
-                    search += static_cast<char>(event.text.unicode);
+                    if (setting == 0) {
+                        maxChildsString += static_cast<char>(event.text.unicode);
+                    }
+                    else if (setting == 1) {
+                        tableSizeString += static_cast<char>(event.text.unicode);
+                    }
                 }
                 //Update text
-                searchTerm.setString(search);
-            }
-            else if (event.type == sf::Event::MouseButtonPressed) {
-                //Search
-                if (treeView.getGlobalBounds().contains(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y)){
-                    state = 2;
+                if (setting == 0) {
+                    maxChilds.setString(maxChildsString);
                 }
-                else if (mapView.getGlobalBounds().contains(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y)){
-                    state = 2;
-                }
-                else if (restart.getGlobalBounds().contains(sf::Mouse::getPosition(window).x,sf::Mouse::getPosition(window).y)){
-                    state = 0;
-                }
-                else if (!searchBar.getGlobalBounds().contains(sf::Mouse::getPosition(window).x,sf::Mouse::getPosition(window).y)) {
-                    state = 1;
+                else if (setting == 1) {
+                    tableSize.setString(tableSizeString);
                 }
             }
         }
-
-        //Draw Window
         window.clear();
         window.draw(mid);
-        for (int i = 0; i < messages.size(); ++i) {window.draw(messages[i]);}
+        window.draw(start);
+        window.draw(questions);
+        window.draw(maxChilds);
+        window.draw(tableSize);
         window.draw(back);
-        for (int i = 0; i < songs.size(); ++i) {window.draw(songs[i]);}
-        window.draw(treeView);
-        window.draw(mapView);
-        window.draw(playlist);
-        window.draw(log);
-        window.draw(restart);
-        window.draw(searchBar);
-        window.draw(searchTerm);
-        for (int i = 0; i < labels.size(); ++i) {window.draw(labels[i]);}
-        for (int i = 0; i < messages.size(); ++i) {window.draw(messages[i]);}
         window.display();
-
     }
 
+    //Songs
+    Songs songList;
+    // Create B Tree object
+    B_Tree songTree(stoi(maxChildsString)/2);
+    //Create Hash Map Object
+    Hash songHash;
+    vector<Song> allSongs;
+
+    parseFile("./Songs100k.txt", songList, allSongs);
+
+    while (set)
+    {
+       sf::Event event;
+
+        while (state == 0) {
+
+            playlistString = "";
+            messagesString = "";
+            songs.clear();
+            search = "";
+            searchTerm.setString("Search");
+            logScroll = false;
+
+            while (window.pollEvent(event))
+            {
+                if (event.type == sf::Event::Closed) {
+                    window.close();
+                }
+            }
+
+            window.clear();
+            window.draw(back);
+            messagesString += "Adding 100,000 songs to data...\n";
+            //messages[messages.size()-1].setPosition(818.6,302.029);
+
+            int j = 0;
+            auto start = std::chrono::steady_clock::now();
+
+            for (int i = 0; i < allSongs.size(); ++i) {
+                songTree.insert_key(allSongs[i]);
+                j++;
+            }
+            cout << j << endl;
+
+            auto stop = std::chrono::steady_clock::now();
+
+            std::chrono::duration<double> duration = stop - start;
+            string time = "Time to add songs to B tree: " + to_string(duration.count()) + " ms\n";
+            messagesString += time;
+            //messages.push_back(sf::Text(time,font,20));
+            // messages[messages.size()-1].setPosition(818.6,messages[messages.size()-2].getGlobalBounds().top+25);
+
+            j = 0;
+            start = std::chrono::steady_clock::now();
+
+            for (int i = 0; i < allSongs.size(); ++i) {
+                songHash.AddSong(allSongs[i]);
+                j++;
+            }
+            cout << j << endl;
+
+            stop = std::chrono::steady_clock::now();
+
+            duration = stop - start;
+            time = "Time taken to add songs to hash map: " + to_string(duration.count()) + " ms\n";
+            messagesString += time;
+            //messages.push_back(sf::Text(time,font,20));
+            //messages[messages.size()-1].setPosition(818.6,messages[messages.size()-2].getGlobalBounds().top+25);
+
+            state = 1;
+
+
+        }
+
+        while(state == 1) {
+
+            while (window.pollEvent(event))
+            {
+                if (event.type == sf::Event::Closed) {
+                    window.close();
+                }
+                if (event.type == sf::Event::MouseButtonPressed) {
+                    //Search
+                    if (searchBar.getGlobalBounds().contains(sf::Mouse::getPosition(window).x,sf::Mouse::getPosition(window).y)){
+                        state = 2;
+                        if (search == "") { searchTerm.setString("");}
+                    }
+                    else if (log.getGlobalBounds().contains(sf::Mouse::getPosition(window).x,sf::Mouse::getPosition(window).y)) {
+                        app = 4;
+                    }
+                    else if (playlist.getGlobalBounds().contains(sf::Mouse::getPosition(window).x,sf::Mouse::getPosition(window).y)) {
+                        app = 3;
+                    }
+                        /*else if (treeView.getGlobalBounds().contains(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y)){
+                            //TODO create search function with B Tree
+                        }
+                        else if (mapView.getGlobalBounds().contains(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y)){
+                            //TODO create search function with B Tree
+                        }*/
+                    else if (restart.getGlobalBounds().contains(sf::Mouse::getPosition(window).x,sf::Mouse::getPosition(window).y)){
+                        state = 0;
+                    }
+                    else if (up.getGlobalBounds().contains(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y)){
+                        if (app == 4) {
+                            messages.move(0,-20);
+                        }
+                        if (app == 3) {
+                            playlistText.move(0,-20);
+                        }
+                    }
+                    else if (down.getGlobalBounds().contains(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y)){
+                        if (app == 4) {
+                            messages.move(0,20);
+                        }
+                        if (app == 3) {
+                            playlistText.move(0,20);
+                        }
+                    }
+
+                }
+            }
+
+            //Draw Window
+            messages.setString(messagesString);
+            window.clear();
+            window.draw(mid);
+            if (app == 4) {window.draw(messages);}
+            else if (app == 3) {window.draw(playlistText);}
+            window.draw(back);
+            for (int i = 0; i < songs.size(); ++i) {window.draw(songs[i]);}
+            //window.draw(treeView);
+            //window.draw(mapView);
+            window.draw(playlist);
+            window.draw(log);
+            window.draw(restart);
+            window.draw(searchBar);
+            window.draw(searchTerm);
+            window.draw(up);
+            window.draw(down);
+            for (int i = 0; i < labels.size(); ++i) {window.draw(labels[i]);}
+            window.display();
+        }
+
+        while (state == 2) {
+
+            while (window.pollEvent(event)) {
+                if (event.type == sf::Event::TextEntered)
+                {
+                    //Enter
+                    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
+                    {
+                        // Enter key pressed, do something
+                        state = 1;
+                        Song* searchedSong;
+                        //messages.push_back(sf::Text("Finding songs similar to: " + search,font,20));
+                        messagesString += "Finding songs similar to: " + search + "...\n";
+                        //messages[messages.size()-1].setPosition(818.6,messages[messages.size()-2].getGlobalBounds().top+25);
+
+                        /*if (messages.size() > 17) {
+                            for (int i = 0; i < messages.size(); i++) {
+                                if (i == 0) {messages[i].move(0, -25); continue;}
+                                messages[i].move(0, -25);
+                                logScroll = true;
+                            }
+                        }
+                         */
+
+                        auto start = std::chrono::steady_clock::now();
+                        searchedSong = songTree.search(search);
+                        cout << search << endl;
+                        auto stop = std::chrono::steady_clock::now();
+
+                        std::chrono::duration<double> duration = stop - start;
+                        string time = "Time taken to find \"" + search + "\" in B tree: " + to_string(duration.count()) + " ms\n";
+                        messagesString += time;
+                        //messages.push_back(sf::Text(time,font,20));
+                        //messages[messages.size()-1].setPosition(818.6,messages[messages.size()-2].getGlobalBounds().top+25);
+
+                        start = std::chrono::steady_clock::now();
+                        songHash.FindSong(search);
+                        cout << search << endl;
+                        stop = std::chrono::steady_clock::now();
+
+                        duration = stop - start;
+                        time = "Time taken to find \"" + search + "\" in hash map: " + to_string(duration.count()) + " ms\n";
+                        messagesString += time;
+                        //messages.push_back(sf::Text(time,font,20));
+                        //messages[messages.size()-1].setPosition(818.6,messages[messages.size()-2].getGlobalBounds().top+25);
+
+                        if (searchedSong) {
+                            vector<vector<string>> temp = songList.FindSimilar(*searchedSong);
+                            for (int i = 0; i < temp.size(); ++i) {
+                                playlistString += temp[i][0] + " by: " + temp[i][1] + "\n";
+                                playlistText.setString(playlistString);
+                            }
+
+                            songs.clear();
+                            for (int i = 0; i < temp.size(); ++i){
+                                string tempStr = temp[i][0] + " " + temp[i][1];
+                                sf::Text song;
+                                song.setString(tempStr);
+                                song.setPosition(30,199 + (i*57));
+                                song.setFillColor(sf::Color::White);
+                                song.setFont(font);
+                                song.setCharacterSize(25);
+                                songs.push_back(song);
+                            }
+                        }
+                        else {
+                            time = "ERROR: could not find song.\n";
+                            messagesString += time;
+                        }
+                    }
+
+                        //Backspace
+                    else if (event.text.unicode == 8)
+                    {
+                        if(!search.empty())
+                            search.pop_back();
+                    }
+
+                        // Check for other printable characters
+                    else if (event.text.unicode >= 32 && event.text.unicode <= 126)
+                    {
+                        // Printable character entered, add it to the search string
+                        search += static_cast<char>(event.text.unicode);
+                    }
+                    else
+                    {
+                        search += static_cast<char>(event.text.unicode);
+                    }
+                    //Update text
+                    searchTerm.setString(search);
+                }
+                else if (event.type == sf::Event::MouseButtonPressed) {
+
+                    if (restart.getGlobalBounds().contains(sf::Mouse::getPosition(window).x,sf::Mouse::getPosition(window).y)){
+                        state = 0;
+                    }
+                    else if (up.getGlobalBounds().contains(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y)){
+                        if (app == 4) {
+                            messages.move(0,-20);
+                        }
+                        if (app == 3) {
+                            playlistText.move(0,-20);
+                        }
+                    }
+                    else if (down.getGlobalBounds().contains(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y)){
+                        if (app == 4) {
+                            messages.move(0,20);
+                        }
+                        if (app == 3) {
+                            playlistText.move(0,20);
+                        }
+                    }
+                    else if (log.getGlobalBounds().contains(sf::Mouse::getPosition(window).x,sf::Mouse::getPosition(window).y)) {
+                        app = 4;
+                    }
+                    else if (playlist.getGlobalBounds().contains(sf::Mouse::getPosition(window).x,sf::Mouse::getPosition(window).y)) {
+                        app = 3;
+                    }
+                    else if (mag.getGlobalBounds().contains(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y)){
+                        // Enter key pressed, do something
+                        state = 1;
+                        Song* searchedSong;
+                        //messages.push_back(sf::Text("Finding songs similar to: " + search,font,20));
+                        messagesString += "Finding songs similar to: " + search + "...\n";
+                        //messages[messages.size()-1].setPosition(818.6,messages[messages.size()-2].getGlobalBounds().top+25);
+
+                        auto start = std::chrono::steady_clock::now();
+                        searchedSong = songTree.search(search);
+                        cout << search << endl;
+                        auto stop = std::chrono::steady_clock::now();
+
+                        std::chrono::duration<double> duration = stop - start;
+                        string time = "Time taken to find \"" + search + "\" in B tree: " + to_string(duration.count()) + " ms\n";
+                        messagesString += time;
+                        //messages.push_back(sf::Text(time,font,20));
+                        //messages[messages.size()-1].setPosition(818.6,messages[messages.size()-2].getGlobalBounds().top+25);
+
+                        start = std::chrono::steady_clock::now();
+                        songHash.FindSong(search);
+                        cout << search << endl;
+                        stop = std::chrono::steady_clock::now();
+
+                        duration = stop - start;
+                        time = "Time taken to find \"" + search + "\" in hash map: " + to_string(duration.count()) + " ms\n";
+                        messagesString += time;
+                        //messages.push_back(sf::Text(time,font,20));
+                        //messages[messages.size()-1].setPosition(818.6,messages[messages.size()-2].getGlobalBounds().top+25);
+
+                        if (searchedSong) {
+                            time = "Found " + searchedSong->name + " by " + searchedSong->artists +"\n";
+                            messagesString += time;
+                            vector<vector<string>> temp = songList.FindSimilar(*searchedSong);
+                            for (int i = 0; i < temp.size(); ++i) {
+                                playlistString += temp[i][0] + " by: " + temp[i][1] + "\n";
+                                playlistText.setString(playlistString);
+                            }
+
+                            songs.clear();
+                            for (int i = 0; i < temp.size(); ++i){
+                                string tempStr = temp[i][0] + " " + temp[i][1];
+                                sf::Text song;
+                                song.setString(tempStr);
+                                song.setPosition(30,199 + (i*57));
+                                song.setFillColor(sf::Color::White);
+                                song.setFont(font);
+                                song.setCharacterSize(25);
+                                songs.push_back(song);
+                            }
+                        }
+                        else {
+                            time = "ERROR: could not find song.\n";
+                            messagesString += time;
+                        }
+                    }
+                    else if (!searchBar.getGlobalBounds().contains(sf::Mouse::getPosition(window).x,sf::Mouse::getPosition(window).y)) {
+                        state = 1;
+                    }
+                }
+            }
+
+            //Draw Window
+            messages.setString(messagesString);
+            window.clear();
+            window.draw(mid);
+            if (app == 4) {window.draw(messages);}
+            else if (app == 3) {window.draw(playlistText);}
+            window.draw(back);
+            for (int i = 0; i < songs.size(); ++i) {window.draw(songs[i]);}
+            //window.draw(treeView);
+            //window.draw(mapView);
+            window.draw(playlist);
+            window.draw(log);
+            window.draw(restart);
+            window.draw(searchBar);
+            window.draw(searchTerm);
+            window.draw(up);
+            window.draw(down);
+            for (int i = 0; i < labels.size(); ++i) {window.draw(labels[i]);}
+            window.display();
+
+        }
+
+
+
+    }
 
 }  //LOOP ^
 
